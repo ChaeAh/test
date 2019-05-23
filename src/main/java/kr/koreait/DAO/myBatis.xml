@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+	servlet-context.xml 파일에서 SqlSessionFactoryBean 클래스의 bean을 생성할 때 mapperLocations의 value 속성으로
+	지정한 패키지에 적당한 이름으로 DOCTYPE인 xml 파일을 만든다.
+	
+	스프링에서 mybatis를 사용할 경우 sql 명령을 작성하는 xml 파일의 namespace에는 반드시 mapper로 사용할
+	인터페이스의 이름을 풀 패키지 이름과 같이 적어야 한다.
+ -->
+<mapper namespace="kr.koreait.DAO.MybatisDAO">
+	<!-- 메인글 한 건을 저장한다. -->
+	<insert id="insert" parameterType="kr.koreait.vo.MVCBoardVO">
+		INSERT INTO MVCBOARD (idx, name, subject, content, ref, lev, seq, hit)
+				values(seq_mvcBoard_idx.nextval, #{name}, #{subject}, #{content}, seq_mvcBoard_idx.currval, 0, 0, 0)
+	</insert>
+	<select id="selectCount" parameterType="String" resultType="int">
+		SELECT count(*) from board where type=#{type}
+	</select>
+	
+	<select id="selectList" parameterType="kr.koreait.vo.MVCBoardList" resultType="kr.koreait.vo.MVCBoardVO">
+	<![CDATA[
+		select * from(
+               select rownum rnum,TT.* from (
+                     select * from board where type=#{type} order by idx desc
+               )TT where rownum<=  #{endNo}
+            ) where rnum >= #{startNo}
+    ]]>
+	</select>
+</mapper>
+	

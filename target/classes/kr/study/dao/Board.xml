@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--  
+	servlet-context.xml 파일에서 SqlsessionFactoryBean 클래스의 bean을 생성할때 mapperLocations의
+	value 속성으로 지정한 패키지에 적당한 이름으로 mapper인 xml 파일을 만든다.
+	스프링에서 mybatis를 사용할 경우 sql 명령을 작성하는 xml 파일의 namespace에는 
+	반드시 mapper로 사용할 인터페이스의 이름을 풀패키지 이름과 같이 적어야 한다.
+-->
+<mapper namespace="kr.study.dao.MyBatisDAO">
+	
+	<insert id="insert" parameterType="kr.study.VO.BoardVO">
+		insert into board (idx, type, sub_type, name, subject, content) values
+		(board_idx_seq.nextval, #{type}, #{sub_type}, #{name}, #{subject}, #{content})
+	</insert>
+	
+	<select id="selectCount" parameterType="java.util.HashMap" resultType="int">
+		select count(*) from board where TYPE=#{type} AND SUB_TYPE like '%'||#{sub_type}||'%'
+	</select>
+	
+	
+	<select id="select" parameterType="java.util.HashMap" resultType="kr.study.VO.BoardVO">
+		<![CDATA[
+		select * from (
+			select rownum rnum, TT.* from (
+				select * from board where TYPE=#{type} AND SUB_TYPE like '%'||#{sub_type}||'%' order by idx desc
+				) TT where rownum <= #{endNo}
+			)where  rnum >= #{startNo}
+		]]>
+	</select>
+	
+	<select id="selectMajor" parameterType="java.util.HashMap" resultType="kr.study.VO.BoardVO">
+		<![CDATA[
+		select * from (
+			select rownum rnum, TT.* from (
+				select * from board where type not in('공지', '자유')  order by idx desc
+				) TT where rownum <= #{endNo}
+			)where  rnum >= #{startNo}
+		]]>
+	</select>
+	
+	<select id="selectHit" parameterType="java.util.HashMap" resultType="kr.study.VO.BoardVO">
+		<![CDATA[
+		select * from (
+			select rownum rnum, TT.* from (
+				select * from board where type not in('공지', '자유')  order by hit desc
+				) TT where rownum <= #{endNo}
+			)where  rnum >= #{startNo}
+		]]>
+	</select>
+
+	<select id="selectMultiCountList" parameterType="java.util.HashMap" resultType="int">
+		select count(*) from board where type= #{type} and 
+		<if test="select!=null and select!=''">
+			<choose>
+				<when test='select == "제목"'>
+					subject like '%'||#{search}||'%'
+				</when>
+				<when test='select == "타입"'>
+					sub_type like '%'||#{search}||'%'
+				</when>
+					<when test='select == "내용"'>
+					content like '%'||#{search}||'%'
+				</when>
+				<when test='select == "작성자"'>
+						name like '%'||#{search}||'%'
+				</when>				
+			</choose>
+		</if>
+	</select>
+	
+	<select id="selectMulti" parameterType="kr.study.VO.BoardSearch" resultType="kr.study.VO.BoardVO">
+		select * from (
+				select rownum rnum, BB.* from ( 
+					select * from board where type= #{type} and 
+					<if test="select !=null and select !=''">
+					<choose>
+						<when test='select == "제목"'>
+							subject like '%'||#{search}||'%'
+						</when>
+						<when test='select == "타입"'>
+							sub_type like'%'||#{search}||'%'
+						</when>
+						<when test='select == "내용"'>
+							content like '%'||#{search}||'%'
+						</when>
+						<when test='select == "작성자"'>
+							name like '%'||#{search}||'%'
+						</when>
+					</choose>
+					</if>
+				order by idx desc		
+		<![CDATA[
+				)BB where rownum <= #{endNo}	
+			)where rnum >= #{startNo}
+		]]>
+	
+	</select>
+	
+	
+	<update id="increment" parameterType="int" >
+		update board set hit=hit+1 where idx = #{idx}
+	</update>
+	
+	<select id="selectByIdx" parameterType="int" resultType="kr.study.VO.BoardVO">
+		select * from board where idx = #{idx}
+	</select>
+	
+	<delete id="delete" parameterType="int">
+		delete from board where idx = #{idx}
+	</delete>
+	
+	
+	<update id="update" parameterType="kr.study.VO.BoardVO">
+		update board set  subject=#{subject}, content=#{content},writeDate=#{writeDate}  where idx=#{idx}
+	</update>
+	
+	<insert id="insertComment" parameterType="kr.study.VO.BcommentVO">
+		insert into bcomment (idx, name, bcomment, subject_idx, ref, lev, seq) 
+		values (bcomment_idx_seq.nextval, #{name}, #{bcomment}, #{subject_idx}, bcomment_idx_seq.currval ,0,0)
+	</insert>
+	
+	<select id="selectComment" parameterType="java.util.HashMap" resultType="kr.study.VO.BcommentVO" >
+	<![CDATA[
+	
+	select * from (
+			select rownum rnum, TT.* from(
+				select * from bcomment where subject_idx = #{subject_idx} order by ref asc, seq asc 
+			) TT where rownum <= #{endNo}
+	) where rnum >= #{startNo}
+	]]>
+	</select>
+	
+	
+	
+	
+	<delete id="deleteComment"  parameterType="int">
+		<!-- delete  from bcomment where idx = #{idx} -->
+		update bcomment set deletecheck=-1 where idx= #{idx}
+	</delete>
+	
+	<update id="updateComment" parameterType="kr.study.VO.BcommentVO">
+		update bcomment set bcomment = #{bcomment}, writeDate=#{writeDate} where idx= #{idx}
+	</update>
+	
+	<select id="selectCommentCount" parameterType="int" resultType="int" >
+		select count(*) from bcomment where subject_idx=#{idx}
+	</select>
+	
+	<select id="commentTotalCount" parameterType="int" resultType="int">
+		select count(*) from bcomment where subject_idx=#{idx}
+	</select>
+
+	<update id="re_updateComment" parameterType="kr.study.VO.BcommentVO">
+	
+	<![CDATA[
+		update bcomment set seq=#{seq} where ref=#{ref} and seq >= #{seq}
+		]]>
+	
+	</update>
+	
+	<insert id="re_insertComment"  parameterType="java.util.HashMap">
+			insert into bcomment (idx, name, bcomment, subject_idx, ref, lev, seq) 
+		values (bcomment_idx_seq.nextval, #{name}, #{bcomment}, #{subject_idx}, #{idx} ,#{lev},#{seq})
+	</insert>
+	
+	<select id="findId" parameterType="String" resultType="int">
+      select count(*) from buser where id =#{id}
+   </select>
+   
+   <select id="findPw" parameterType="java.util.HashMap" resultType="int">
+      select count(*) from buser where id =#{id} AND pw = #{pw}
+   </select>
+   
+   <select id="selectById" parameterType="String" resultType="kr.study.VO.BuserVO">
+      select * from buser where id =#{id}
+   </select>
+	
+	<insert id="insertUser" parameterType="kr.study.VO.BuserVO" >
+		insert into buser (idx,id,name,pw) values (buser_idx_sequence.nextval, #{id}, #{name}, #{pw})
+	</insert>
+	
+	<insert id="insertLike" parameterType="java.util.HashMap"  >
+			insert into likeboard (idx,board_idx,user_idx,like_check) values (likeboard_idx_seq.nextval, #{board_idx}, #{user_idx},1)
+	</insert>
+	
+	<select id="selectLike" parameterType="java.util.HashMap" resultType="kr.study.VO.LikeVO">
+       select * from likeboard where board_idx =#{board_idx} and user_idx=#{user_idx}
+   </select>
+   
+   <update id="updateLike" parameterType="java.util.HashMap"> 
+   			update likeboard set like_check=#{like_check} where board_idx =#{board_idx} and user_idx=#{user_idx}
+   </update>
+   
+   
+   <select id="likeCount"  parameterType="java.util.HashMap" resultType="int" >
+   		select count(*) from likeboard where board_idx=#{board_idx} and like_check=1
+   </select>
+	
+	<select id="selectLikeRank" parameterType="java.util.HashMap" resultType="kr.study.VO.LikeVO">
+		<![CDATA[
+		select * from (
+			select rownum rnum, TT.* from (
+				select  board_idx from likeboard where like_check=1 group by board_idx order by count(*) desc, board_idx desc
+				) TT where rownum <= #{endNo}
+			)where  rnum >= #{startNo}
+		]]>
+	</select>
+	
+		<select id="selectLikeBoard" parameterType="kr.study.VO.LikeVO" resultType="kr.study.VO.BoardVO">
+		select * from board where idx = #{board_idx}
+	</select>
+	
+</mapper>

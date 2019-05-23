@@ -1,0 +1,125 @@
+/*!
+ * Start Bootstrap - Modern Business (https://startbootstrap.com/template-overviews/modern-business)
+ * Copyright 2013-2019 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-logomodern-business-nav/blob/master/LICENSE)
+ */
+body {
+  padding-top: 56px;
+}
+
+.carousel-item {
+  height: 65vh;
+  min-height: 300px;
+  background: no-repeat center center scroll;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.portfolio-item {
+  margin-bottom: 30px;
+}
+#items{
+  background: lightblue;
+}
+
+
+/*게시판 미리보기*/
+#content3{
+  background: mBoard;
+  position: block;
+  width: 1200px;
+  margin: auto;
+  margin-bottom: 10px;
+}
+
+#mBoard{
+  position:relative;
+  width: 700px;
+  height:280px;
+  border:1px solid #cecece;
+  background:#fff;
+  overflow:hidden;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  margin-left: 0px;
+}
+#mBoard>div{
+  float:left;
+  width: 100px;
+  margin-left:25px;
+  margin-top:25px;
+}
+#mBoard>div:first-child{
+  margin-left:30px;
+}
+#mBoard h3{
+  text-align: center;
+  position:relative;
+  top: 0px;
+}
+#mBoard h3 a{
+  color: black;
+  display:block;
+  font-size:16px;
+  font-weight:normal;
+}
+#mBoard div.on h3{
+  border-bottom:1px solid #0375d5;
+}
+#mBoard div.on h3 a{
+  padding-bottom: 17px;
+  font-weight:600;
+  color:#0375d5;
+}
+#mBoard>div>ul{
+  display:none;
+  position:absolute;
+  top:62px;
+  left:30px;
+  right:30px;
+  border-top:1px solid #d3d3d3;
+  list-style: none;
+}
+#mBoard>div.on>ul{
+  display:block;
+}
+#mBoard>div>ul>li{
+  margin-top:12px;
+  padding-left:10px;
+  background:url('http://www.travelicn.or.kr/open_content/images/main2017/board_blet.gif') no-repeat left center;
+  overflow:hidden;
+}
+#mBoard>div>ul>li:first-child{
+  margin-top:20px;
+}
+#mBoard>div>ul>li>a{
+  color: black;
+  float:left;
+  display:block;
+  width:80%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+#mBoard>div>ul>li span{
+  float:right;
+}
+#mBoard .more{
+  display:none;
+  position:absolute;
+  right:30px;
+  top:30px;
+}
+#mBoard .more span{
+  display:block;
+  width:13px;
+  height:13px;
+  background:url('http://www.travelicn.or.kr/open_content/images/main2017/board_more.gif') no-repeat;
+  line-height: 0;
+  font-size: 0;
+}
+#mBoard div.on .more{
+  display:block;
+}
