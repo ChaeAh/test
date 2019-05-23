@@ -126,7 +126,7 @@
  
 </head>
 <body>
-
+test
 <input type="hidden" id="userVO" value="${userVO }">
 <input type="hidden" id="user_idx" value="${user_idx }">
 <fmt:requestEncoding value="UTF-8"/>
